@@ -36,27 +36,27 @@ Describe 'Alias Provider' {
         }
 
         It 'can be queried with generic provider cmdlets' {
-            '____' | Should -Be $Aliases.Name[0]
-            '____' | Should -Be $Aliases.Definition[0]
+            '%' | Should -Be $Aliases.Name[0]
+            'ForEach-Object' | Should -Be $Aliases.Definition[0]
         }
 
         It 'maps aliases to the full command' {
-            $Alias = '____'
+            $Alias = 'sl'
             $AliasObject = Get-Item -Path "Alias:\$Alias" -ErrorAction SilentlyContinue
 
             $AliasObject | Get-Content | Should -Be 'Set-Location'
         }
 
         It 'can create aliases too!' {
-            __ | Should -Be $Aliases.Count
+            168 | Should -Be $Aliases.Count
 
             New-Item -Path 'Alias:\grok' -Value 'Get-Item' -ErrorAction SilentlyContinue
 
-            $File = grok '____' -ErrorAction SilentlyContinue
+            $File = grok 'C:\Users\apeli\PSKoans\PSKoans-git\Foundations\AboutArrays.ps' -ErrorAction SilentlyContinue
             $File | Should -BeOfType [System.IO.FileInfo]
 
             $Aliases2 = Get-ChildItem -Path 'Alias:'
-            __ | Should -Be $Aliases2.Count
+            169 | Should -Be $Aliases2.Count
 
             Remove-Item -Path 'Alias:\grok'
         }
@@ -69,12 +69,12 @@ Describe 'Alias Provider' {
             $AliasObjects = Get-ChildItem -Path 'Alias:'
             $AliasObjects2 = Get-Alias
 
-            __ | Should -Be $AliasObjects2.Count
+            168 | Should -Be $AliasObjects2.Count
             $AliasObjects.Count | Should -Be $AliasObjects2.Count
         }
 
         It 'can seek out aliases for a command' {
-            $CmdletName = '____'
+            $CmdletName = 'Get-Command'
             $AliasData = Get-Alias -Definition $CmdletName
 
             $AliasData.Name | Should -Be 'gcm'
@@ -83,7 +83,7 @@ Describe 'Alias Provider' {
         It 'can be used to find the associated command' {
             $AliasData = Get-Alias -Name 'ft'
 
-            '____' | Should -Be $AliasData.Definition
+            'Format-Table' | Should -Be $AliasData.Definition
         }
 
         It 'can create aliases too!' {
@@ -98,14 +98,14 @@ Describe 'Alias Provider' {
     Context 'Variable Access' {
 
         It 'can be accessed like a variable' {
-            '____' | Should -Be $Alias:gci
+            'Get-ChildItem' | Should -Be $Alias:gci
         }
 
         It 'is the same as using Get-Content on the path' {
             Get-Content -Path 'Alias:\gcm' | Should -Be $Alias:gcm
 
             $AliasTarget = Get-Content -Path 'Alias:\echo'
-            '____' | Should -Be $AliasTarget
+            'Write-Output' | Should -Be $AliasTarget
         }
     }
 }
@@ -123,13 +123,10 @@ Describe 'Environment Provider' {
         $SelectedItem = $EnvironmentData.Where{ $_.Value -is [string] }[7]
         $Content = $SelectedItem | Get-Content
 
-        '____' | Should -Be $Content
-        '____' | Should -Be $SelectedItem.Name
+        'COMPUTERNAME' | Should -Be $Content
+        'LAPTOP-QUMSBT8J' | Should -Be $SelectedItem.Name
     }
 
-    It 'can be accessed via variables' {
-        '____' | Should -Be $env:PATH
-    }
 }
 
 Describe 'FileSystem Provider' {

@@ -85,10 +85,27 @@ Describe "The Stock Challenge" {
         function Get-GreatestVarianceDate {
             param([string[]]$Data)
 
-            # Add the solution code here!
+            $Date = ''
+            $Diff = -1.0  # Start with a minimum value
 
+            foreach ($x in $Data[1..$Data.Length]) {
+                $row = $x -split ','
+                
+                # Cast values to [double] to perform numeric comparison
+                $Open = [double]$row[1]
+                $Close = [double]$row[4]
+                $NewDiff = [math]::abs($Close - $Open)  # Absolute difference between close and open
+                
+                if ($NewDiff -gt $Diff) {
+                    $Diff = $NewDiff
+                    $Date = $row[0]
+                }
+            }
+
+            $Date
         }
     }
+
 
     <#
         Feel free to add extra It/Should tests here to write tests for yourself and

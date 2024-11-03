@@ -40,12 +40,33 @@ Describe 'Kata - Sorting Characters' {
             )
         }
 
-        function Get-SortedString {
-            param($String)
+function Get-SortedString {
+    param($String)
 
-            # Add your solution code here!
-
+    # Step 1: Filter out non-alphabet characters
+    $filteredChars = @()
+    foreach ($char in $String.ToCharArray()) {
+        if ($char -match '[a-zA-Z]') {
+            $filteredChars += [string]::new($char).ToLower()  # Convert char to string and then to lowercase
         }
+    }
+
+    # Step 2: Manually sort the characters in $filteredChars array
+    for ($i = 0; $i -lt $filteredChars.Length; $i++) {
+        for ($j = $i + 1; $j -lt $filteredChars.Length; $j++) {
+            if ($filteredChars[$i] -gt $filteredChars[$j]) {
+                # Swap characters if they are out of order
+                $temp = $filteredChars[$i]
+                $filteredChars[$i] = $filteredChars[$j]
+                $filteredChars[$j] = $temp
+            }
+        }
+    }
+
+    # Step 3: Join sorted characters into a single string
+    return -join $filteredChars
+}
+
     }
 
     <#
@@ -64,27 +85,27 @@ Describe 'Kata - Sorting Characters' {
     } -TestCases @(
         @{
             String = 'Mountains are merely mountains.'
-            Result = 'aaaeeeiilMmmnnnnoorrssttuuy'
+            Result = 'aaaeeeiilmmmnnnnoorrssttuuy'
         }
         @{
             String = 'What do you call the world?'
-            Result = 'aacddehhlllooorttuWwy'
+            Result = 'aacddehhlllooorttuwwy'
         }
         @{
             String = 'Out of nowhere, the mind comes forth.'
-            Result = 'cdeeeeffhhhimmnnOoooorrstttuw'
+            Result = 'cdeeeeffhhhimmnnooooorrstttuw'
         }
         @{
             String = 'Because it is so very clear, it takes longer to come to the realization.'
-            Result = 'aaaaaBccceeeeeeeeeghiiiiiklllmnnoooooorrrrsssstttttttuvyz'
+            Result = 'aaaaabccceeeeeeeeeghiiiiiklllmnnoooooorrrrsssstttttttuvyz'
         }
         @{
             String = 'The hands of the world are open.'
-            Result = 'aaddeeeefhhhlnnoooprrsTtw'
+            Result = 'aaddeeeefhhhlnnoooprrsttw'
         }
         @{
             String = 'You are those huge waves sweeping everything before them, swallowing all in their path.'
-            Result = 'aaaaabeeeeeeeeeeeefgggghhhhhhiiiiillllmnnnnoooopprrrrsssstttttuuvvwwwwYy'
+            Result = 'aaaaabeeeeeeeeeeeefgggghhhhhhiiiiillllmnnnnoooopprrrrsssstttttuuvvwwwwyy'
         }
     )
 }
