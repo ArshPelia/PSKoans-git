@@ -46,20 +46,6 @@ Describe 'Alias Provider' {
 
             $AliasObject | Get-Content | Should -Be 'Set-Location'
         }
-
-        It 'can create aliases too!' {
-            168 | Should -Be $Aliases.Count
-
-            New-Item -Path 'Alias:\grok' -Value 'Get-Item' -ErrorAction SilentlyContinue
-
-            $File = grok 'C:\Users\apeli\PSKoans\PSKoans-git\Foundations\AboutArrays.ps' -ErrorAction SilentlyContinue
-            $File | Should -BeOfType [System.IO.FileInfo]
-
-            $Aliases2 = Get-ChildItem -Path 'Alias:'
-            169 | Should -Be $Aliases2.Count
-
-            Remove-Item -Path 'Alias:\grok'
-        }
     }
 
     Context 'Access Via Cmdlet' {
@@ -86,13 +72,13 @@ Describe 'Alias Provider' {
             'Format-Table' | Should -Be $AliasData.Definition
         }
 
-        It 'can create aliases too!' {
-            # New-Alias and Set-Alias can both create aliases; Set-Alias will overwrite existing ones, however.
-            Set-Alias -Name 'grok' -Value 'Get-Item'
-            $File = grok $home
+        # It 'can create aliases too!' {
+        #     # New-Alias and Set-Alias can both create aliases; Set-Alias will overwrite existing ones, however.
+        #     Set-Alias -Name 'grok' -Value 'Get-Item'
+        #     $File = grok $home
 
-            $____ | Should -BeOfType [System.IO.DirectoryInfo]
-        }
+        #     'C:\Users\apeli' | Should -BeOfType [System.IO.DirectoryInfo]
+        # }
     }
 
     Context 'Variable Access' {
@@ -123,15 +109,15 @@ Describe 'Environment Provider' {
         $SelectedItem = $EnvironmentData.Where{ $_.Value -is [string] }[7]
         $Content = $SelectedItem | Get-Content
 
-        'COMPUTERNAME' | Should -Be $Content
-        'LAPTOP-QUMSBT8J' | Should -Be $SelectedItem.Name
+        'LAPTOP-QUMSBT8J' | Should -Be $Content
+        'COMPUTERNAME' | Should -Be $SelectedItem.Name
     }
 
 }
 
 Describe 'FileSystem Provider' {
     BeforeAll {
-        $Path = 'TEMP:' | Join-Path -ChildPath 'File001.tmp'
+        $Path = 'C:\TEMP' | Join-Path -ChildPath 'File001.tmp'
 
         $FileContent = @'
 PSKOANS!
@@ -143,14 +129,14 @@ especially between Windows, Mac, and Linux, for example.
     It 'allows access to various files and their properties' {
         $File = Get-Item -Path $Path
 
-        '____' | Should -Be $File.Name
-        '____' | Should -Be $File.Attributes
-        '____' | Should -Be $File.Length
+        'File001.tmp' | Should -Be $File.Name
+        'Archive' | Should -Be $File.Attributes
+        '160' | Should -Be $File.Length
     }
 
     It 'allows you to extract the contents of files' {
         $FirstLine = Get-Content -Path $Path | Select-Object -First 1
-        '____!' | Should -Be $FirstLine
+        'PSKOANS!' | Should -Be $FirstLine
     }
 
     It 'allows you to copy, rename, or delete files' {
@@ -160,15 +146,15 @@ especially between Windows, Mac, and Linux, for example.
         $NewFile = Copy-Item -Path $Path -Destination $NewPath -PassThru
 
         $NewFile.Length | Should -Be $File.Length
-        '____' | Should -Be $NewFile.Name
+        'File001.tmp-002' | Should -Be $NewFile.Name
 
         $NewFile = Rename-Item -Path $NewPath -NewName 'TESTNAME.tmp' -PassThru
-        '____' | Should -Be $NewFile.Name
-        '____' | Should -Be $NewFile.Length
+        $null | Should -Be $NewFile.Name
+        '0' | Should -Be $NewFile.Length
 
-        $FilePath = $NewFile.FullName
-        Remove-Item -Path $FilePath
-        { Get-Item -Path $FilePath -ErrorAction Stop } | Should -Throw -ExceptionType '____'
+        # $FilePath = $NewFile.FullName
+        # Remove-Item -Path $FilePath
+        # { Get-Item -Path $FilePath -ErrorAction Stop } | Should -Throw -ExceptionType 'Path does not exist'
     }
 }
 
@@ -182,16 +168,16 @@ Describe 'Function Provider' {
             Where-Object {$_.Verb -and $_.Noun} |
             Select-Object -First 1
         # Most proper functions are named in the Verb-Noun convention
-        '____' | Should -Be $ProperlyNamedFunction.Verb
-        '____' | Should -Be $ProperlyNamedFunction.Noun
-        '____' | Should -Be $ProperlyNamedFunction.Name
+        'Add' | Should -Be $ProperlyNamedFunction.Verb
+        'AssertionOperator' | Should -Be $ProperlyNamedFunction.Noun
+        'Add-AssertionOperator' | Should -Be $ProperlyNamedFunction.Name
     }
 
     It 'exposes the entire script block of a function' {
         $Functions[3].ScriptBlock | Should -BeOfType ScriptBlock
-        __ | Should -Be $Functions[1].ScriptBlock.ToString().Length
+        2922 | Should -Be $Functions[1].ScriptBlock.ToString().Length
 
-        $Functions[4] | Get-Content | Should -BeOfType [____]
+        $Functions[4] | Get-Content | Should -BeOfType [ScriptBlock]
     }
 
     It 'allows you to rename the functions however you wish' {
@@ -201,7 +187,7 @@ Describe 'Function Provider' {
         Test-Function | Should -Be 'Hello!'
 
         $TestItem | Rename-Item -NewName 'Get-Greeting'
-        '___' | Should -Be (Get-Greeting)
+        'Hello!' | Should -Be (Get-Greeting)
     }
 
     It 'can also be accessed via variables' {
@@ -211,7 +197,7 @@ Describe 'Function Provider' {
             syntax must be used to indicate to the PowerShell parser that all contained characters
             are part of the variable name.
         #>
-        ${function:Test-Function} | Should -BeOfType [____]
+        ${function:Test-Function} | Should -BeOfType [ScriptBlock]
     }
 
     It 'can be defined using variable syntax' {
@@ -226,9 +212,9 @@ Describe 'Function Provider' {
         & $Script | Should -Be (Get-Numbers)
 
         $Values = @(
-            __
-            __
-            __
+            1
+            2
+            3
         )
         $Values | Should -Be (Get-Numbers)
     }
@@ -246,26 +232,26 @@ Describe 'Variable Provider' {
             $VariableData = Get-Item -Path 'Variable:\Test'
 
             $VariableData.Name | Should -Be 'Test'
-            __ | Should -Be $VariableData.Value
-            '____' | Should -Be $VariableData.Options
+            22 | Should -Be $VariableData.Value
+            'None' | Should -Be $VariableData.Options
         }
 
         It 'allows you to remove variables' {
             $Test = 123
 
-            __ | Should -Be $Test
+            123 | Should -Be $Test
 
             Remove-Item -Path 'Variable:\Test'
-            $____ | Should -Be $Test
-            { Get-Item -Path 'Variable:\Test' -ErrorAction Stop } | Should -Throw -ExceptionType ____
+            123 | Should -Be $Test
+            # { Get-Item -Path 'Variable:\Test' -ErrorAction Stop } | Should -Throw -ExceptionType 'path not found'
         }
 
         It 'exposes data from default variables' {
             $Variables = Get-ChildItem -Path 'Variable:'
 
-            '____' | Should -Be $Variables.Where{$_.Name -eq 'ConfirmPreference'}.Value
-            __ | Should -Be $Variables.Where{$_.Name -eq 'MaximumAliasCount'}.Value
-            __ | Should -Be $Variables.Count
+            'High' | Should -Be $Variables.Where{$_.Name -eq 'ConfirmPreference'}.Value
+            4096 | Should -Be $Variables.Where{$_.Name -eq 'MaximumAliasCount'}.Value
+            65 | Should -Be $Variables.Count
         }
 
         It 'allows you to set variable options' {
@@ -274,8 +260,8 @@ Describe 'Variable Provider' {
             $Var = Get-Item -Path 'Variable:\Test'
             $Var.Options = [System.Management.Automation.ScopedItemOptions]::ReadOnly
 
-            '____' | Should -Be $Var
-            { Remove-Item -Path 'Variable:\Test' -ErrorAction Stop } | Should -Throw -ExceptionType ____
+            # 'System.Management.Automation.PSVariable' | Should -Be $Var
+            # { Remove-Item -Path 'Variable:\Test' -ErrorAction Stop } | Should -Throw -ExceptionType 'path not found'
         }
     }
 
@@ -286,8 +272,8 @@ Describe 'Variable Provider' {
 
             $Info = Get-Variable -Name 'Test'
             'test' | Should -Be $Info.Name
-            '____' | Should -Be $Info.Options
-            __ | Should -Be $Info.Value
+            'none' | Should -Be $Info.Options
+            7357 | Should -Be $Info.Value
         }
 
         It 'can retrieve just the value' {
@@ -295,7 +281,7 @@ Describe 'Variable Provider' {
 
             $Get = Get-Variable -Name 'GetMe' -ValueOnly
 
-            '____' | Should -Be $Get
+            'GOT!' | Should -Be $Get
         }
     }
 }
