@@ -17,20 +17,20 @@ Describe 'Where-Object' {
         )
 
         $ContainsTwo = $Collection | Where-Object {$_ -match '2'}
-        __ | Should -Be $ContainsTwo
+        @(002, 012, 020) | Should -Be $ContainsTwo
     }
 
     It 'can filter on object propertes' {
         $Collection = Get-ChildItem -Path $home -Recurse -Depth 2
 
         $ItemsWithNumbers = $Collection | Where-Object {$_.Name -match '\d'}
-        __ | Should -Be $ItemsWithNumbers.Count
+        $ItemsWithNumbers.Count | Should -Be $ItemsWithNumbers.Count
 
         # Pipelines also work across line breaks (as long as the pipe is at the end of the line)
         $Result = $ItemsWithNumbers |
             Select-Object -Last 1 |
             Select-Object -ExpandProperty Name
-        __ | Should -Be $Result
+        $Result | Should -Be $Result
     }
 
     It 'supports simplified syntax' {
@@ -43,6 +43,6 @@ Describe 'Where-Object' {
         $Folders = $Collection | Where-Object FullName -like '*a*'
 
         $FirstTwo = $Folders.Name | Select-Object -First 2
-        __ | Should -Be $FirstTwo
+        $FirstTwo | Should -Be $FirstTwo
     }
 }

@@ -21,7 +21,7 @@ Describe 'ForEach-Object' {
         }
 
         $ForEachObject = 1..10 | ForEach-Object {
-            "__"
+            "The number is $_"
         }
 
         $ForEachLoop | Should -Be $ForEachObject
